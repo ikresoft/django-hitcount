@@ -1,7 +1,6 @@
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
-from django.utils import simplejson
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
+import json
 
 from hitcount.utils import get_ip
 from hitcount.models import Hit, HitCount, BlacklistIP, BlacklistUserAgent
@@ -72,7 +71,7 @@ def _update_hit_count(request, hitcount):
     return False
 
 def json_error_response(error_message):
-    return HttpResponse(simplejson.dumps(dict(success=False,
+    return HttpResponse(json.dumps(dict(success=False,
                                               error_message=error_message)))
 
 # TODO better status responses - consider model after django-voting,
