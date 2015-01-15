@@ -108,4 +108,4 @@ def update_hit_count_ajax(request):
     else:
         status = "no hit recorded"
 
-    return HttpResponse(json.dumps({'status': status}), mimetype="application/json")
+    return HttpResponse(json.dumps({'status': status}), content_type="application/json")
