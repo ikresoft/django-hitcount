@@ -3,3 +3,12 @@
 .DS_Store
 .AppleDouble
 *.swp
+
+dev.db
+build/
+src/
+pip-log.txt
+*.egg-info
+doc_src/_build
+MANIFEST
+dist/
