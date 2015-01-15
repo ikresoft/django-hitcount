@@ -5,6 +5,7 @@ import json
 from hitcount.utils import get_ip
 from hitcount.models import Hit, HitCount, BlacklistIP, BlacklistUserAgent
 
+
 def _update_hit_count(request, hitcount):
     '''
     Evaluates a request's Hit and corresponding HitCount object and,
@@ -24,8 +25,7 @@ def _update_hit_count(request, hitcount):
     ip = get_ip(request)
     user_agent = request.META.get('HTTP_USER_AGENT', '')[:255]
     hits_per_ip_limit = getattr(settings, 'HITCOUNT_HITS_PER_IP_LIMIT', 0)
-    exclude_user_group = getattr(settings,
-                            'HITCOUNT_EXCLUDE_USER_GROUP', None)
+    exclude_user_group = getattr(settings, 'HITCOUNT_EXCLUDE_USER_GROUP', None)
 
     # first, check our request against the blacklists before continuing
     if BlacklistIP.objects.filter(ip__exact=ip) or \
@@ -46,21 +46,18 @@ def _update_hit_count(request, hitcount):
             return False
 
     # create a generic Hit object with request data
-    hit = Hit(  session=session_key,
-                hitcount=hitcount,
-                ip=get_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],)
+    hit = Hit(session=session_key, hitcount=hitcount, ip=get_ip(request), user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],)
 
     # first, use a user's authentication to see if they made an earlier hit
     if user.is_authenticated():
-        if not qs.filter(user=user,hitcount=hitcount):
-            hit.user = user #associate this hit with a user
+        if not qs.filter(user=user, hitcount=hitcount):
+            hit.user = user  # associate this hit with a user
             hit.save()
             return True
 
     # if not authenticated, see if we have a repeat session
     else:
-        if not qs.filter(session=session_key,hitcount=hitcount):
+        if not qs.filter(session=session_key, hitcount=hitcount):
             hit.save()
 
             # forces a save on this anonymous users session
@@ -70,14 +67,16 @@ def _update_hit_count(request, hitcount):
 
     return False
 
+
 def json_error_response(error_message):
-    return HttpResponse(json.dumps(dict(success=False,
-                                              error_message=error_message)))
+    return HttpResponse(json.dumps(dict(success=False, error_message=error_message)))
 
 # TODO better status responses - consider model after django-voting,
 # right now the django handling isn't great.  should return the current
 # hit count so we could update it via javascript (since each view will
 # be one behind).
+
+
 def update_hit_count_ajax(request):
     '''
     Ajax call that can be used to update a hit count.
@@ -109,5 +108,4 @@ def update_hit_count_ajax(request):
     else:
         status = "no hit recorded"
 
-    json = simplejson.dumps({'status': status})
-    return HttpResponse(json,mimetype="application/json")
+    return HttpResponse(json.dumps({'status': status}), mimetype="application/json")
